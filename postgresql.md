@@ -13,3 +13,11 @@ To create a new database from the command line, use the following command:
 ```bash
 sudo -u postgres createdb demo
 ```
+
+## Accessing a Database
+
+It can be done by typing the command:
+
+```bash
+sudo -u postgres psql [database]
+```
