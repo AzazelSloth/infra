@@ -1,0 +1,12 @@
+* Ubuntu Server 22.04 LTS
+* Git
+* Node.js (LTS)
+* npm
+* PM2
+* PostgreSQL
+* Nginx
+* Certbot
+* n8n
+* Docker
+* Docker Compose
+* UFW (Firewall)
