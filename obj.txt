@@ -10,3 +10,19 @@
 * Docker
 * Docker Compose
 * UFW (Firewall)
+
+Accès à votre serveur
+Panneau WHM : https://vps-26-9165.hosting-management.com:2087
+Nom d’utilisateur : root
+Mot de passe : 522j88ly1K@jP?
+
+Connexion SSH :
+Adresse IP : 104.254.182.46
+Port : 7822
+Nom d’utilisateur : root
+Mot de passe : 522j88ly1K@jP?
+
+⚙️ Détails techniques du serveur
+Nom du serveur :
+Nom d’hôte : vps-26-9165.hosting-management.com
+Adresse IP principale : 104.254.182.46
