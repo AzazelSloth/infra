@@ -1,11 +1,71 @@
 <mxfile host="app.diagrams.net">
   <diagram name="Page-1" id="QYqzQ-_SLkofYpAc-bFv">
-    <mxGraphModel dx="2054" dy="1108" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="3327" dy="4717" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
         <mxCell id="psk22T-xRWB5YoWig2av-1" parent="1" style="image;html=1;image=img/lib/clip_art/networking/Wireless_Router_128x128.png" value="" vertex="1">
-          <mxGeometry height="80" width="80" x="360" y="40" as="geometry" />
+          <mxGeometry height="80" width="80" x="342.1" y="-903" as="geometry" />
+        </mxCell>
+        <mxCell id="IWa5BqmNKSlGweyT6BlC-1" parent="1" style="image;html=1;image=img/lib/clip_art/networking/Switch_128x128.png" value="" vertex="1">
+          <mxGeometry height="80" width="80" x="342.1" y="-743" as="geometry" />
+        </mxCell>
+        <mxCell id="IWa5BqmNKSlGweyT6BlC-2" parent="1" style="image;html=1;image=img/lib/clip_art/networking/Switch_128x128.png" value="" vertex="1">
+          <mxGeometry height="80" width="80" x="1195" y="-743" as="geometry" />
+        </mxCell>
+        <mxCell id="IWa5BqmNKSlGweyT6BlC-3" parent="1" style="image;points=[];aspect=fixed;html=1;align=center;shadow=0;dashed=0;image=img/lib/allied_telesis/wireless/Access_Point_Indoor.svg;" value="" vertex="1">
+          <mxGeometry height="54.6" width="36.6" x="1216.7" y="-605" as="geometry" />
+        </mxCell>
+        <mxCell id="IWa5BqmNKSlGweyT6BlC-4" parent="1" style="image;points=[];aspect=fixed;html=1;align=center;shadow=0;dashed=0;image=img/lib/allied_telesis/wireless/Access_Point_Outdoor.svg;" value="" vertex="1">
+          <mxGeometry height="99.6" width="25.8" x="941.1" y="-752.8" as="geometry" />
+        </mxCell>
+        <mxCell id="IWa5BqmNKSlGweyT6BlC-5" parent="1" style="image;points=[];aspect=fixed;html=1;align=center;shadow=0;dashed=0;image=img/lib/allied_telesis/wireless/Access_Point_Outdoor.svg;" value="" vertex="1">
+          <mxGeometry height="99.6" width="25.8" x="72.1" y="-752.8" as="geometry" />
+        </mxCell>
+        <mxCell id="IWa5BqmNKSlGweyT6BlC-6" parent="1" style="image;html=1;image=img/lib/clip_art/networking/Switch_128x128.png" value="" vertex="1">
+          <mxGeometry height="80" width="80" x="360" y="480" as="geometry" />
+        </mxCell>
+        <mxCell id="IWa5BqmNKSlGweyT6BlC-7" parent="1" style="image;points=[];aspect=fixed;html=1;align=center;shadow=0;dashed=0;image=img/lib/allied_telesis/wireless/Access_Point_Outdoor.svg;" value="" vertex="1">
+          <mxGeometry height="99.6" width="25.8" x="-117.9" y="-752.8" as="geometry" />
+        </mxCell>
+        <mxCell id="IWa5BqmNKSlGweyT6BlC-8" parent="1" style="image;points=[];aspect=fixed;html=1;align=center;shadow=0;dashed=0;image=img/lib/allied_telesis/wireless/Access_Point_Indoor.svg;" value="" vertex="1">
+          <mxGeometry height="54.6" width="36.6" x="388" y="640" as="geometry" />
+        </mxCell>
+        <mxCell id="IWa5BqmNKSlGweyT6BlC-9" parent="1" style="image;points=[];aspect=fixed;html=1;align=center;shadow=0;dashed=0;image=img/lib/allied_telesis/wireless/Access_Point_Outdoor.svg;" value="" vertex="1">
+          <mxGeometry height="99.6" width="25.8" x="650" y="470.20000000000005" as="geometry" />
+        </mxCell>
+        <mxCell id="IWa5BqmNKSlGweyT6BlC-10" parent="1" style="image;points=[];aspect=fixed;html=1;align=center;shadow=0;dashed=0;image=img/lib/allied_telesis/wireless/Access_Point_Outdoor.svg;" value="" vertex="1">
+          <mxGeometry height="99.6" width="25.8" x="632.1" y="-752.8" as="geometry" />
+        </mxCell>
+        <mxCell id="IWa5BqmNKSlGweyT6BlC-11" parent="1" style="image;points=[];aspect=fixed;html=1;align=center;shadow=0;dashed=0;image=img/lib/allied_telesis/wireless/Access_Point_Outdoor.svg;" value="" vertex="1">
+          <mxGeometry height="99.6" width="25.8" x="910" y="470.20000000000005" as="geometry" />
+        </mxCell>
+        <mxCell id="IWa5BqmNKSlGweyT6BlC-12" parent="1" style="image;points=[];aspect=fixed;html=1;align=center;shadow=0;dashed=0;image=img/lib/allied_telesis/wireless/Access_Point_Indoor.svg;" value="" vertex="1">
+          <mxGeometry height="54.6" width="36.6" x="-458.3" y="-360" as="geometry" />
+        </mxCell>
+        <mxCell id="IWa5BqmNKSlGweyT6BlC-13" parent="1" style="image;html=1;image=img/lib/clip_art/networking/Switch_128x128.png" value="" vertex="1">
+          <mxGeometry height="80" width="80" x="-480" y="-590" as="geometry" />
+        </mxCell>
+        <mxCell id="IWa5BqmNKSlGweyT6BlC-16" parent="1" style="image;html=1;image=img/lib/clip_art/networking/Switch_128x128.png" value="" vertex="1">
+          <mxGeometry height="80" width="80" x="1370" y="356" as="geometry" />
+        </mxCell>
+        <mxCell id="IWa5BqmNKSlGweyT6BlC-17" parent="1" style="image;html=1;image=img/lib/clip_art/networking/Switch_128x128.png" value="" vertex="1">
+          <mxGeometry height="80" width="80" x="1370" y="663.3" as="geometry" />
+        </mxCell>
+        <mxCell id="IWa5BqmNKSlGweyT6BlC-18" parent="1" style="image;points=[];aspect=fixed;html=1;align=center;shadow=0;dashed=0;image=img/lib/allied_telesis/wireless/Access_Point_Indoor.svg;" value="" vertex="1">
+          <mxGeometry height="54.6" width="38.6" x="1620" y="676" as="geometry" />
+        </mxCell>
+        <mxCell id="IWa5BqmNKSlGweyT6BlC-22" parent="1" style="image;points=[];aspect=fixed;html=1;align=center;shadow=0;dashed=0;image=img/lib/allied_telesis/wireless/Access_Point_Indoor.svg;" value="" vertex="1">
+          <mxGeometry height="54.6" width="38.6" x="1620" y="368.7" as="geometry" />
+        </mxCell>
+        <mxCell id="IWa5BqmNKSlGweyT6BlC-23" parent="1" style="image;points=[];aspect=fixed;html=1;align=center;shadow=0;dashed=0;image=img/lib/allied_telesis/wireless/Access_Point_Indoor.svg;" value="" vertex="1">
+          <mxGeometry height="54.6" width="36.6" x="1461.7" y="-605" as="geometry" />
+        </mxCell>
+        <mxCell id="IWa5BqmNKSlGweyT6BlC-24" parent="1" style="image;html=1;image=img/lib/clip_art/networking/Switch_128x128.png" value="" vertex="1">
+          <mxGeometry height="80" width="80" x="1205" y="-733" as="geometry" />
+        </mxCell>
+        <mxCell id="IWa5BqmNKSlGweyT6BlC-25" parent="1" style="image;html=1;image=img/lib/clip_art/networking/Switch_128x128.png" value="" vertex="1">
+          <mxGeometry height="80" width="80" x="1440" y="-743" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
