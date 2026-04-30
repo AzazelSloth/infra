@@ -1,4 +1,4 @@
-# Installation
+# Installation and configuration
 
 ## Try with npx
 
@@ -52,3 +52,19 @@ npm install -g n8n@next
 ```
 
 Docs at: [npm | n8n Docs](https://docs.n8n.io/hosting/installation/npm/)
+
+---
+
+## Configuration steps
+
+After installing n8n, you can configure it by setting environment variables or using a configuration file.
+
+### Environment variables
+
+```bash
+WEBHOOK_URL
+N8N_PORT
+N8N_PROTOCOL 
+N8N_SECURE_COOKIE=true
+```
+
