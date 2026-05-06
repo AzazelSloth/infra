@@ -1,0 +1,49 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Page-1" id="y6nI9jeTORRChLRrXRjt">
+    <mxGraphModel dx="1644" dy="865" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="Z-XBnmj6_ajZnI724zNY-7" connectable="0" parent="1" style="group" value="" vertex="1">
+          <mxGeometry height="99.60000000000002" width="635.8" x="100" y="420" as="geometry" />
+        </mxCell>
+        <mxCell id="Z-XBnmj6_ajZnI724zNY-4" parent="Z-XBnmj6_ajZnI724zNY-7" style="image;html=1;image=img/lib/clip_art/networking/Wireless_Router_128x128.png" value="AP/Routeur Premier" vertex="1">
+          <mxGeometry height="80" width="80" y="9.800000000000011" as="geometry" />
+        </mxCell>
+        <mxCell id="Z-XBnmj6_ajZnI724zNY-5" parent="Z-XBnmj6_ajZnI724zNY-7" style="image;points=[];aspect=fixed;html=1;align=center;shadow=0;dashed=0;image=img/lib/allied_telesis/wireless/Access_Point_Outdoor.svg;" value="AP 1 Premier" vertex="1">
+          <mxGeometry height="99.6" width="25.8" x="312" as="geometry" />
+        </mxCell>
+        <mxCell id="Z-XBnmj6_ajZnI724zNY-6" parent="Z-XBnmj6_ajZnI724zNY-7" style="image;points=[];aspect=fixed;html=1;align=center;shadow=0;dashed=0;image=img/lib/allied_telesis/wireless/Access_Point_Outdoor.svg;" value="AP 2 Premier" vertex="1">
+          <mxGeometry height="99.6" width="25.8" x="610" as="geometry" />
+        </mxCell>
+        <mxCell id="Z-XBnmj6_ajZnI724zNY-8" connectable="0" parent="1" style="group" value="" vertex="1">
+          <mxGeometry height="99.6" width="635.8" x="100" y="75.19999999999999" as="geometry" />
+        </mxCell>
+        <mxCell id="Z-XBnmj6_ajZnI724zNY-1" parent="Z-XBnmj6_ajZnI724zNY-8" style="image;html=1;image=img/lib/clip_art/networking/Wireless_Router_128x128.png" value="AP/Routeur Deuxième&amp;nbsp;" vertex="1">
+          <mxGeometry height="80" width="80" y="9.800000000000011" as="geometry" />
+        </mxCell>
+        <mxCell id="Z-XBnmj6_ajZnI724zNY-2" parent="Z-XBnmj6_ajZnI724zNY-8" style="image;points=[];aspect=fixed;html=1;align=center;shadow=0;dashed=0;image=img/lib/allied_telesis/wireless/Access_Point_Outdoor.svg;" value="AP 1 Deuxième" vertex="1">
+          <mxGeometry height="99.6" width="25.8" x="312" as="geometry" />
+        </mxCell>
+        <mxCell id="Z-XBnmj6_ajZnI724zNY-3" parent="Z-XBnmj6_ajZnI724zNY-8" style="image;points=[];aspect=fixed;html=1;align=center;shadow=0;dashed=0;image=img/lib/allied_telesis/wireless/Access_Point_Outdoor.svg;" value="&lt;span style=&quot;caret-color: rgba(0, 0, 0, 0);&quot;&gt;AP 2 Deuxième&lt;/span&gt;" vertex="1">
+          <mxGeometry height="99.6" width="25.8" x="610" as="geometry" />
+        </mxCell>
+        <mxCell id="Z-XBnmj6_ajZnI724zNY-9" connectable="0" parent="1" style="group" value="" vertex="1">
+          <mxGeometry height="99.60000000000002" width="635.8" x="90" y="840" as="geometry" />
+        </mxCell>
+        <mxCell id="Z-XBnmj6_ajZnI724zNY-10" parent="Z-XBnmj6_ajZnI724zNY-9" style="image;html=1;image=img/lib/clip_art/networking/Wireless_Router_128x128.png" value="MIkrotik RDC" vertex="1">
+          <mxGeometry height="80" width="80" y="9.800000000000011" as="geometry" />
+        </mxCell>
+        <mxCell id="Z-XBnmj6_ajZnI724zNY-11" parent="Z-XBnmj6_ajZnI724zNY-9" style="image;points=[];aspect=fixed;html=1;align=center;shadow=0;dashed=0;image=img/lib/allied_telesis/wireless/Access_Point_Outdoor.svg;" value="AP 1 RDC" vertex="1">
+          <mxGeometry height="99.6" width="25.8" x="312" as="geometry" />
+        </mxCell>
+        <mxCell id="Z-XBnmj6_ajZnI724zNY-12" parent="Z-XBnmj6_ajZnI724zNY-9" style="image;points=[];aspect=fixed;html=1;align=center;shadow=0;dashed=0;image=img/lib/allied_telesis/wireless/Access_Point_Outdoor.svg;" value="AP 2 RDC" vertex="1">
+          <mxGeometry height="99.6" width="25.8" x="610" as="geometry" />
+        </mxCell>
+        <mxCell id="Z-XBnmj6_ajZnI724zNY-13" parent="Z-XBnmj6_ajZnI724zNY-9" style="image;html=1;image=img/lib/clip_art/networking/Switch_128x128.png" value="Switch RDC" vertex="1">
+          <mxGeometry height="80" width="80" x="160" y="10" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
