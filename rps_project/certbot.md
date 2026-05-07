@@ -48,15 +48,15 @@ sudo certbot renew --dry-run
 Si vous voulez vous assurer qu'Apache recharge toujours la nouvelle cle :
 
 ```bash
-sudo certbot renew --deploy-hook "systemctl reload apache2"
+sudo certbot renew --deploy-hook "systemctl reload httpd"
 ```
 
 ## Verification
 
 ```bash
 sudo certbot certificates
-sudo apache2ctl configtest
-sudo systemctl reload apache2
+sudo apachectl configtest
+sudo systemctl reload httpd
 ```
 
 ## Points d'attention

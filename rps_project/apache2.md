@@ -1,20 +1,34 @@
-# Apache2
+# Apache HTTP Server (`httpd`)
 
-Apache2 joue ici le role d'entree publique sur `80/443` et reverse-proxy vers Nginx en local sur `127.0.0.1:8786`.
+Oui, la meme logique de reverse proxy s'applique a `httpd`. Ce qui change surtout, ce sont les commandes, l'emplacement des fichiers et la facon d'activer les modules.
 
-## Modules a activer
+Dans cette architecture, `httpd` reste l'entree publique sur `80/443` et reverse-proxy vers Nginx en local sur `127.0.0.1:8786`.
+
+## Ce qui change par rapport a `apache2`
+
+- Service : `httpd` au lieu de `apache2`
+- Test de configuration : `apachectl configtest` ou `httpd -t`
+- Liste des modules : `httpd -M`
+- Pas de `a2enmod`
+- Pas de `sites-available` / `a2ensite`
+- Fichier de vhost generalement dans `/etc/httpd/conf.d/`
+
+## Modules a verifier
+
+Avec `httpd`, les modules sont en general deja charges via `conf.modules.d`. Verifiez simplement leur presence :
 
 ```bash
-sudo a2enmod ssl rewrite headers proxy proxy_http proxy_wstunnel remoteip http2
-sudo systemctl restart apache2
+sudo httpd -M | grep -E 'ssl|proxy|proxy_http|proxy_wstunnel|rewrite|headers|remoteip|http2'
 ```
+
+Si un module manque, il faut l'activer dans la config du systeme ou installer le paquet correspondant selon votre distribution.
 
 ## VirtualHost recommande
 
-Creer le fichier `rps.conf` :
+Sur un systeme `httpd` classique, creez :
 
 ```bash
-sudo nano /etc/apache2/sites-available/rps.conf
+sudo nano /etc/httpd/conf.d/rps.conf
 ```
 
 ```apache
@@ -26,8 +40,8 @@ sudo nano /etc/apache2/sites-available/rps.conf
     RewriteCond %{REQUEST_URI} !^/\.well-known/acme-challenge/
     RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
 
-    ErrorLog ${APACHE_LOG_DIR}/rps-http-error.log
-    CustomLog ${APACHE_LOG_DIR}/rps-http-access.log combined
+    ErrorLog /var/log/httpd/rps-http-error.log
+    CustomLog /var/log/httpd/rps-http-access.log combined
 </VirtualHost>
 
 <IfModule mod_ssl.c>
@@ -67,8 +81,8 @@ sudo nano /etc/apache2/sites-available/rps.conf
     RequestHeader set X-Forwarded-Host %{HTTP_HOST}s
     RequestHeader set X-Forwarded-Port %{SERVER_PORT}s
 
-    ErrorLog ${APACHE_LOG_DIR}/rps-https-error.log
-    CustomLog ${APACHE_LOG_DIR}/rps-https-access.log combined
+    ErrorLog /var/log/httpd/rps-https-error.log
+    CustomLog /var/log/httpd/rps-https-access.log combined
 </VirtualHost>
 </IfModule>
 ```
@@ -76,14 +90,42 @@ sudo nano /etc/apache2/sites-available/rps.conf
 ## Activation
 
 ```bash
-sudo a2ensite rps.conf
-sudo apache2ctl configtest
-sudo apache2ctl -M | grep -E 'ssl|proxy|proxy_http|proxy_wstunnel|rewrite|headers|remoteip|http2'
-sudo systemctl reload apache2
+sudo apachectl configtest
+sudo systemctl restart httpd
+sudo systemctl status httpd
 ```
+
+## Cas special cPanel / WHM
+
+Si votre serveur WHM/cPanel pilote Apache, n'editez pas le vhost principal a la main dans `/etc/httpd/conf.d/` ou `/etc/apache2/conf/httpd.conf`, car cPanel peut le regenerer.
+
+Dans ce cas, utilisez plutot un include de vhost. Les chemins typiques sont :
+
+- HTTP : `/etc/apache2/conf.d/userdata/std/2_4/<user>/<domaine>/rps.conf`
+- HTTPS : `/etc/apache2/conf.d/userdata/ssl/2_4/<user>/<domaine>/rps.conf`
+
+Exemple :
+
+```bash
+sudo mkdir -p /etc/apache2/conf.d/userdata/std/2_4/USER/appli.laroche360.ca
+sudo mkdir -p /etc/apache2/conf.d/userdata/ssl/2_4/USER/appli.laroche360.ca
+sudo nano /etc/apache2/conf.d/userdata/std/2_4/USER/appli.laroche360.ca/rps.conf
+sudo nano /etc/apache2/conf.d/userdata/ssl/2_4/USER/appli.laroche360.ca/rps.conf
+```
+
+Apres modification :
+
+```bash
+sudo /usr/local/cpanel/scripts/rebuildhttpdconf
+sudo apachectl configtest
+sudo systemctl restart httpd
+```
+
+Si vous exposez aussi `automation.laroche360.ca` comme sous-domaine separe dans cPanel, prevoyez egalement les includes correspondants pour ce vhost.
 
 ## Points d'attention
 
-- Apache doit rester le seul service expose sur `80` et `443`.
+- `httpd` doit rester le seul service expose sur `80` et `443`.
 - Nginx doit ecouter uniquement sur `127.0.0.1:8786`.
+- Si vous etes sous cPanel, privilegiez les `userdata includes` plutot qu'une edition directe du fichier principal.
 - Si vous activez HSTS, faites-le seulement apres validation complete du HTTPS sur tous les sous-domaines.

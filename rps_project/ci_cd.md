@@ -88,6 +88,6 @@ jobs:
 pm2 status
 docker compose ps
 sudo systemctl reload nginx
-sudo systemctl reload apache2
+sudo systemctl reload httpd
 curl -I https://appli.laroche360.ca
 ```
