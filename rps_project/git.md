@@ -1,5 +1,7 @@
 # Git
 
+Ce guide part du principe que vous travaillez avec l'utilisateur `devlaroche360`, pas avec `root`.
+
 ## Installation
 
 ```bash
@@ -19,14 +21,7 @@ git config --global core.editor nano
 
 ## Cle SSH de deploiement
 
-Sur le VPS, il est preferable d'utiliser une cle dediee au deploiement :
-
-```bash
-ssh-keygen -t ed25519 -C "deploy@laroche360" -f ~/.ssh/id_ed25519
-cat ~/.ssh/id_ed25519.pub
-```
-
-Ajoutez la cle publique comme deploy key ou dans votre compte GitHub.
+La cle SSH GitHub est documentee dans [ssh.md](./ssh.md).
 
 ## Test de connexion GitHub
 
@@ -38,7 +33,7 @@ ssh -T git@github.com
 
 ```bash
 sudo mkdir -p /srv/rps
-sudo chown $USER:$USER /srv/rps
+sudo chown -R devlaroche360:devlaroche360 /srv/rps
 git clone git@github.com:OWNER/REPO.git /srv/rps
 ```
 
@@ -47,9 +42,11 @@ git clone git@github.com:OWNER/REPO.git /srv/rps
 ```bash
 git config --list
 git remote -v
+ssh -T git@github.com
 ```
 
 ## Recommandations
 
-- Evitez de deployer en `root` si un utilisateur applicatif est possible.
+- Travaillez en `devlaroche360` pour Git, SSH, PM2 et les fichiers du projet.
+- Reservez `sudo` aux installations systeme et aux services comme `nginx`, `httpd` et `postgresql`.
 - Utilisez SSH plutot que HTTPS pour simplifier les automatisations CI/CD.

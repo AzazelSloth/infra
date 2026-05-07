@@ -62,6 +62,7 @@ docker compose down
 
 ## Recommandations
 
+- Utilisez `devlaroche360` pour lancer `docker compose` au quotidien, apres ajout au groupe `docker`.
 - Exposez les conteneurs sensibles seulement sur `127.0.0.1`.
-- Laissez Apache2 et Nginx gerer l'acces public et le TLS.
+- Laissez `httpd` et Nginx gerer l'acces public et le TLS.
 - Activez toujours une politique de redemarrage comme `unless-stopped`.

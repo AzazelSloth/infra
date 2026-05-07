@@ -9,13 +9,11 @@ Ce guide configure l'acces SSH GitHub pour l'utilisateur `devlaroche360` sur le 
 
 ## Contexte
 
-Dans votre cas :
+Dans l'environnement actuel :
 
-- vous etes connecte comme `devlaroche360`
-- la cle `id_deploy` a ete creee dans le dossier courant
-- elle appartient actuellement a `root`
-
-Il faut donc la deplacer dans `/home/devlaroche360/.ssh/` et corriger les permissions.
+- vous devez executer les commandes GitHub en tant que `devlaroche360`
+- les cles SSH doivent vivre dans `/home/devlaroche360/.ssh/`
+- `root` ne doit pas servir pour `git clone`, `git pull` ou `git push`
 
 ## 1. Creer le dossier `.ssh`
 
@@ -24,7 +22,9 @@ mkdir -p /home/devlaroche360/.ssh
 chmod 700 /home/devlaroche360/.ssh
 ```
 
-## 2. Deplacer la cle dans le bon dossier
+## 2. Si la cle a ete creee au mauvais endroit
+
+Si `id_deploy` et `id_deploy.pub` ont ete generes hors de `/home/devlaroche360/.ssh/`, deplacez-les une fois, puis corrigez les droits :
 
 ```bash
 sudo mv /home/devlaroche360/id_deploy /home/devlaroche360/.ssh/
@@ -33,6 +33,8 @@ sudo chown devlaroche360:devlaroche360 /home/devlaroche360/.ssh/id_deploy /home/
 chmod 600 /home/devlaroche360/.ssh/id_deploy
 chmod 644 /home/devlaroche360/.ssh/id_deploy.pub
 ```
+
+Si la cle est deja au bon endroit, gardez seulement les commandes de permissions.
 
 ## 3. Creer la configuration SSH
 
@@ -114,7 +116,9 @@ git clone git@github.com:OWNER/REPO.git
 Exemple :
 
 ```bash
-git clone git@github.com:kajutokirigaya4/mon-repo.git /home/devlaroche360/mon-repo
+sudo mkdir -p /srv/rps
+sudo chown -R devlaroche360:devlaroche360 /srv/rps
+git clone git@github.com:kajutokirigaya4/mon-repo.git /srv/rps
 ```
 
 ## 9. Basculer un depot existant de HTTPS vers SSH
@@ -149,6 +153,7 @@ git push -u origin test-ssh
 
 ```bash
 whoami
+echo $HOME
 ls -la /home/devlaroche360/.ssh
 ssh -vT git@github.com
 git remote -v
@@ -160,3 +165,4 @@ git remote -v
 - La cle privee doit rester en `600`.
 - Le dossier `.ssh` doit rester en `700`.
 - Si vous regenerez une cle plus tard, pensez a remplacer aussi la cle enregistree dans GitHub.
+- Si vous obtenez `Permission denied (publickey)` alors que `whoami` vaut `root`, relancez le test en `devlaroche360`.

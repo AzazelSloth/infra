@@ -42,6 +42,7 @@ module.exports = {
 ## Commandes utiles
 
 ```bash
+cd /srv/rps
 pm2 start ecosystem.config.js
 pm2 status
 pm2 logs
@@ -53,6 +54,7 @@ pm2 startup systemd -u $USER --hp $HOME
 
 ## Bonnes pratiques
 
+- Lancez PM2 en tant que `devlaroche360`, pas en `root`.
 - Gardez les apps Node sur des ports locaux uniquement.
 - Faites pointer Nginx vers `3000` et `3001`.
 - Utilisez `pm2 startOrReload ecosystem.config.js --update-env` dans le pipeline CI/CD.

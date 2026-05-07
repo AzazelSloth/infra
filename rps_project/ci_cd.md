@@ -78,9 +78,10 @@ jobs:
 
 ## Cote serveur
 
-- Le depot applicatif peut vivre dans `/srv/rps` ou `/var/www/rps`.
+- Le depot applicatif vit dans `/srv/rps`.
 - Les services Node geres par PM2 doivent exposer seulement des ports locaux comme `3000` et `3001`.
 - `n8n` peut rester en conteneur sur `127.0.0.1:5678`.
+- Les commandes applicatives du pipeline doivent tourner avec l'utilisateur `devlaroche360`.
 
 ## Verification apres deploiement
 
