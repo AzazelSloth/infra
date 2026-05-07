@@ -1,59 +1,65 @@
-# Installation
+# Certbot
 
-## Install snapd
+Dans cette architecture, Apache2 est le point d'entree public. Il est donc plus logique d'emettre les certificats avec le plugin Apache plutot que `--nginx`.
 
-Follow instructions on snapcraft's site: [Install the daemon - Snap documentation](https://snapcraft.io/docs/installing-snapd/)
-
-## Remove certbot-auto and any Certbot OS packages
+## Installation
 
 ```bash
 sudo apt-get remove certbot
-```
-
-## Install Certbot
-
-Run this command on the command line on the machine to install Certbot.
-
-```bash
+sudo snap install core
+sudo snap refresh core
 sudo snap install --classic certbot
+sudo ln -sf /snap/bin/certbot /usr/local/bin/certbot
 ```
 
-## Prepare the Certbot command
+## Emission du certificat
 
-Execute the following instruction on the command line on the machine to ensure that the `certbot` command can be run.
+Pour couvrir les deux noms utilises par la stack :
 
 ```bash
-sudo ln -s /snap/bin/certbot /usr/local/bin/certbot
+sudo certbot certonly --apache \
+  -d appli.laroche360.ca \
+  -d automation.laroche360.ca
 ```
 
-## Choose how to run Certbot
+Les certificats seront ensuite reutilises par Apache2 :
 
-### Get and install your certificates
+```text
+/etc/letsencrypt/live/appli.laroche360.ca/fullchain.pem
+/etc/letsencrypt/live/appli.laroche360.ca/privkey.pem
+```
 
-Run this command to get a certificate and have Certbot edit your nginx configuration automatically to serve it, turning on HTTPS access in a single step.
+## Renouvellement
+
+Verifier que le timer est actif :
 
 ```bash
-sudo certbot --nginx
+systemctl list-timers | grep certbot
 ```
 
-### Or, just get a certifcate
-
-If you're feeling more conservative and would like to make the changes to your nginx configuration by hand, run this command.
-
-```bash
-sudo certbot certonly --nginx
-```
-
-## Test automatic renewal
-
-The Certbot packages on your system come with a cron job or systemd timer that will renew your certificates automatically before they expire. You will not need to run Certbot again, unless you change your configuration. You can test automatic renewal for your certificates by running this command:
+Tester un renouvellement a blanc :
 
 ```bash
 sudo certbot renew --dry-run
 ```
 
-## Confirm that Certbot worked
+## Hook utile
 
-To confirm that your site is set up properly, visit [Your website URL](https://yourwebsite.com/) in your browser and look for the lock icon in the URL bar.
+Si vous voulez vous assurer qu'Apache recharge toujours la nouvelle cle :
 
-Docs at: [Certbots Intsructions | Certbot](https://certbot.eff.org/instructions?ws=nginx&os=snap)
+```bash
+sudo certbot renew --deploy-hook "systemctl reload apache2"
+```
+
+## Verification
+
+```bash
+sudo certbot certificates
+sudo apache2ctl configtest
+sudo systemctl reload apache2
+```
+
+## Points d'attention
+
+- Le port `80` doit rester joignable pour l'ACME challenge.
+- Si un certificat unique est emis avec `appli.laroche360.ca` comme domaine principal, il peut quand meme couvrir `automation.laroche360.ca` en SAN.

@@ -1,116 +1,65 @@
-# Personnalization
+# Apache2
 
-For better securty, edit `apache2` configuration as follows:
+Apache2 joue ici le role d'entree publique sur `80/443` et reverse-proxy vers Nginx en local sur `127.0.0.1:8786`.
+
+## Modules a activer
 
 ```bash
-nano /etc/apache2/conf/httpd.conf
+sudo a2enmod ssl rewrite headers proxy proxy_http proxy_wstunnel remoteip http2
+sudo systemctl restart apache2
 ```
 
-Then look for and edit following lines:
+## VirtualHost recommande
+
+Creer le fichier `rps.conf` :
+
+```bash
+sudo nano /etc/apache2/sites-available/rps.conf
+```
 
 ```apache
-# The Listen port can be updated using 'Tweak Settings' -> 'System',
-# However, if you have any Apache Reserved IPs, then this Tweak setting will
-# be ignored. Instead, each IP on your system (excluding Apache Reserved IPs)
-# will be listed here.
-Listen 0.0.0.0:[http_port]
-Listen [::]:[http_port]
-
-# The Listen port can be updated using 'Tweak Settings' -> 'System',
-# However, if you have any Apache Reserved IPs, then this Tweak setting will
-# be ignored. Instead, each IP on your system (excluding Apache Reserved IPs)
-# will be listed here.
-Listen 0.0.0.0:[https_port]
-Listen [::]:[https_port]
-```
-
-Some issues were encontered while doing the configuration.
-Here is the new one `/etc/apache2/sites-available/rps.conf`
-
-```conf
 <VirtualHost *:80>
     ServerName appli.laroche360.ca
     ServerAlias automation.laroche360.ca
 
     RewriteEngine On
-
-    # Allow Let's Encrypt challenge
     RewriteCond %{REQUEST_URI} !^/\.well-known/acme-challenge/
-
-    # Force HTTPS
     RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
 
-    ErrorLog ${APACHE_LOG_DIR}/appli.laroche360.ca-error.log
-    CustomLog ${APACHE_LOG_DIR}/appli.laroche360.ca-access.log combined
+    ErrorLog ${APACHE_LOG_DIR}/rps-http-error.log
+    CustomLog ${APACHE_LOG_DIR}/rps-http-access.log combined
 </VirtualHost>
 
+<IfModule mod_ssl.c>
 <VirtualHost *:443>
     ServerName appli.laroche360.ca
     ServerAlias automation.laroche360.ca
 
-    # =========================================================
-    # SSL CONFIGURATION
-    # =========================================================
-
+    Protocols h2 http/1.1
     SSLEngine on
-
     SSLProtocol TLSv1.2 TLSv1.3
-    SSLHonorCipherOrder on
-    SSLCompression off
-    SSLUseStapling on
 
     SSLCertificateFile /etc/letsencrypt/live/appli.laroche360.ca/fullchain.pem
     SSLCertificateKeyFile /etc/letsencrypt/live/appli.laroche360.ca/privkey.pem
-
-    # =========================================================
-    # SECURITY HEADERS
-    # =========================================================
 
     Header always set X-Content-Type-Options "nosniff"
     Header always set X-Frame-Options "SAMEORIGIN"
     Header always set Referrer-Policy "strict-origin-when-cross-origin"
 
-    # Optional:
-    # Uncomment only if ALL subdomains are HTTPS
-    # Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
-
-    # =========================================================
-    # PROXY SETTINGS
-    # =========================================================
-
     ProxyPreserveHost On
     ProxyRequests Off
-    ProxyVia Off
-
     SSLProxyEngine On
-
     ProxyTimeout 3600
     Timeout 3600
 
-    # =========================================================
-    # LET'S ENCRYPT
-    # =========================================================
-
     ProxyPass /.well-known/acme-challenge/ !
-
-    # =========================================================
-    # WEBSOCKET SUPPORT
-    # =========================================================
 
     RewriteEngine On
     RewriteCond %{HTTP:Upgrade} =websocket [NC]
     RewriteRule /(.*) ws://127.0.0.1:8786/$1 [P,L]
 
-    # =========================================================
-    # MAIN REVERSE PROXY
-    # =========================================================
-
     ProxyPass / http://127.0.0.1:8786/
     ProxyPassReverse / http://127.0.0.1:8786/
-
-    # =========================================================
-    # FORWARDED HEADERS
-    # =========================================================
 
     RequestHeader set X-Forwarded-Proto "https"
     RequestHeader append X-Forwarded-For %{REMOTE_ADDR}s
@@ -118,29 +67,23 @@ Here is the new one `/etc/apache2/sites-available/rps.conf`
     RequestHeader set X-Forwarded-Host %{HTTP_HOST}s
     RequestHeader set X-Forwarded-Port %{SERVER_PORT}s
 
-    <Proxy *>
-        Require all granted
-    </Proxy>
-
-    # =========================================================
-    # LOGS
-    # =========================================================
-
-    ErrorLog ${APACHE_LOG_DIR}/appli.laroche360.ca-ssl-error.log
-    CustomLog ${APACHE_LOG_DIR}/appli.laroche360.ca-ssl-access.log combined
+    ErrorLog ${APACHE_LOG_DIR}/rps-https-error.log
+    CustomLog ${APACHE_LOG_DIR}/rps-https-access.log combined
 </VirtualHost>
+</IfModule>
 ```
 
-Then enable the new configuration and restart apache2:
+## Activation
 
 ```bash
-# Check apache syntax
-sudo apache2ctl configtest
-# Check website activation
 sudo a2ensite rps.conf
-sudo apache2ctl -S
-# Check necessary modules
-sudo apache2ctl -M | grep -E 'ssl|proxy|proxy_http|rewrite|headers'
-# Restart apache2
-sudo systemctl restart apache2
+sudo apache2ctl configtest
+sudo apache2ctl -M | grep -E 'ssl|proxy|proxy_http|proxy_wstunnel|rewrite|headers|remoteip|http2'
+sudo systemctl reload apache2
 ```
+
+## Points d'attention
+
+- Apache doit rester le seul service expose sur `80` et `443`.
+- Nginx doit ecouter uniquement sur `127.0.0.1:8786`.
+- Si vous activez HSTS, faites-le seulement apres validation complete du HTTPS sur tous les sous-domaines.

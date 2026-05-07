@@ -1,70 +1,63 @@
-# Installation and configuration
+# n8n
 
-## Try with npx
+Pour cette stack, la meilleure option est de faire tourner `n8n` derriere Nginx et Apache, sur `127.0.0.1:5678`, de preference via Docker.
 
-You can try n8n without installing it using npx.
-From the terminal, run:
+## Variables importantes
 
-```bash
-npx n8n
+Si `n8n` est publie sous `/n8n/`, alignez la configuration avec le reverse proxy :
+
+```env
+N8N_HOST=automation.laroche360.ca
+N8N_PORT=5678
+N8N_PROTOCOL=https
+N8N_PATH=/n8n/
+N8N_EDITOR_BASE_URL=https://automation.laroche360.ca/n8n/
+WEBHOOK_URL=https://automation.laroche360.ca/n8n/
+N8N_SECURE_COOKIE=true
+N8N_LISTEN_ADDRESS=0.0.0.0
+TZ=Indian/Antananarivo
+GENERIC_TIMEZONE=Indian/Antananarivo
 ```
 
-## Install globally with npm
+## Lancement via Docker Compose
 
-To install n8n (LTS) globally, use `npm`:
-
-```bash
-npm install n8n -g
+```yaml
+services:
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:latest
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:5678:5678"
+    env_file:
+      - .env
+    volumes:
+      - ./n8n_data:/home/node/.n8n
 ```
 
-To install or update to a specific version of n8n use the `@` syntax to specify the version. For example:
+Puis :
 
 ```bash
-npm install -g n8n@0.126.1
+docker compose up -d
+docker compose logs -f n8n
 ```
 
-To install `next` (beta):
+## Si vous tenez a npm
 
 ```bash
-npm install -g n8n@next
-```
-
-After the installation, start n8n by running:
-
-```bash
-n8n
-# or
+npm install -g n8n
 n8n start
 ```
 
-## Updating
+Dans ce cas, gerez le processus via PM2 plutot qu'avec une session shell ouverte.
 
-To update your n8n instance to the latest (LTS) version, run:
-
-```bash
-npm update -g n8n
-```
-
-To install the `next` version:
+## Verification
 
 ```bash
-npm install -g n8n@next
+curl -I http://127.0.0.1:5678
+curl -I https://automation.laroche360.ca/n8n/
 ```
 
-Docs at: [npm | n8n Docs](https://docs.n8n.io/hosting/installation/npm/)
+## Points d'attention
 
----
-
-## Configuration steps
-
-After installing n8n, you can configure it by setting environment variables or using a configuration file.
-
-### Environment variables
-
-```bash
-WEBHOOK_URL
-N8N_PORT
-N8N_PROTOCOL 
-N8N_SECURE_COOKIE=true
-```
-
+- `WEBHOOK_URL` doit pointer vers l'URL publique finale, sinon les webhooks seront invalides.
+- Si vous gardez le sous-chemin `/n8n/`, le slash final doit rester coherent dans `N8N_PATH` et `N8N_EDITOR_BASE_URL`.

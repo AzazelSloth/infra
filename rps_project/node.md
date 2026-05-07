@@ -1,54 +1,37 @@
-# Installation
+# Node.js et npm
 
-## Official docs
+Le plus simple sur Ubuntu 22.04 est d'installer la LTS depuis NodeSource pour obtenir une version recente de `node` et `npm`.
 
-### Docker installation
-
-For official steps (docs) using docker:
+## Installation Node.js LTS
 
 ```bash
-# Docker has specific installation instructions for each operating system.
-# Please refer to the official documentation at https://docker.com/get-started/
-
-# Pull the Node.js Docker image:
-docker pull node:24-alpine
-
-# Create a Node.js container and start a Shell session:
-docker run -it --rm --entrypoint sh node:24-alpine
-
-# Verify the Node.js version:
-node -v # Should print "v24.14.1".
-
-# Verify npm version:
-npm -v # Should print "11.11.0".
+curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
+sudo apt install -y nodejs
 ```
 
-### NVM Instrallation
-
-Getting Node.js® for linux using `nvm` with `npm`
+## Verification
 
 ```bash
-# Download and install nvm:
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.4/install.sh | bash
-
-# in lieu of restarting the shell
-\. "$HOME/.nvm/nvm.sh"
-
-# Download and install Node.js:
-nvm install 24
-
-# Verify the Node.js version:
-node -v # Should print "v24.14.1".
-
-# Verify npm version:
-npm -v # Should print "11.11.0".
-
+node -v
+npm -v
 ```
 
-## APT Installation
-
-Using APT:
+## Outils globaux utiles
 
 ```bash
-sudo apt install nodejs npm
+sudo npm install -g pm2
+pm2 -v
 ```
+
+## Recommandations npm
+
+```bash
+npm config set fund false
+npm config set audit true
+```
+
+## Emplacements applicatifs conseilles
+
+- Frontend Next.js : port local `3001`
+- Backend API : port local `3000`
+- Les processus Node doivent etre redemarres par PM2, pas par une session SSH ouverte.
