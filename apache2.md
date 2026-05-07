@@ -33,7 +33,11 @@ Here is the new one `/etc/apache2/sites-available/rps.conf`
     ServerAlias automation.laroche360.ca
 
     RewriteEngine On
+
+    # Allow Let's Encrypt challenge
     RewriteCond %{REQUEST_URI} !^/\.well-known/acme-challenge/
+
+    # Force HTTPS
     RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
 
     ErrorLog ${APACHE_LOG_DIR}/appli.laroche360.ca-error.log
@@ -44,39 +48,83 @@ Here is the new one `/etc/apache2/sites-available/rps.conf`
     ServerName appli.laroche360.ca
     ServerAlias automation.laroche360.ca
 
+    # =========================================================
+    # SSL CONFIGURATION
+    # =========================================================
+
     SSLEngine on
+
     SSLProtocol TLSv1.2 TLSv1.3
-    SSLCipherSuite HIGH:!aNULL:!MD5
     SSLHonorCipherOrder on
     SSLCompression off
-    SSLUseStapling off
+    SSLUseStapling on
 
     SSLCertificateFile /etc/letsencrypt/live/appli.laroche360.ca/fullchain.pem
     SSLCertificateKeyFile /etc/letsencrypt/live/appli.laroche360.ca/privkey.pem
 
+    # =========================================================
+    # SECURITY HEADERS
+    # =========================================================
+
     Header always set X-Content-Type-Options "nosniff"
     Header always set X-Frame-Options "SAMEORIGIN"
-    Header always set X-XSS-Protection "1; mode=block"
     Header always set Referrer-Policy "strict-origin-when-cross-origin"
-    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+
+    # Optional:
+    # Uncomment only if ALL subdomains are HTTPS
+    # Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+
+    # =========================================================
+    # PROXY SETTINGS
+    # =========================================================
 
     ProxyPreserveHost On
     ProxyRequests Off
     ProxyVia Off
 
+    SSLProxyEngine On
+
+    ProxyTimeout 3600
+    Timeout 3600
+
+    # =========================================================
+    # LET'S ENCRYPT
+    # =========================================================
+
     ProxyPass /.well-known/acme-challenge/ !
+
+    # =========================================================
+    # WEBSOCKET SUPPORT
+    # =========================================================
+
+    RewriteEngine On
+    RewriteCond %{HTTP:Upgrade} =websocket [NC]
+    RewriteRule /(.*) ws://127.0.0.1:8786/$1 [P,L]
+
+    # =========================================================
+    # MAIN REVERSE PROXY
+    # =========================================================
+
     ProxyPass / http://127.0.0.1:8786/
     ProxyPassReverse / http://127.0.0.1:8786/
 
+    # =========================================================
+    # FORWARDED HEADERS
+    # =========================================================
+
     RequestHeader set X-Forwarded-Proto "https"
-    RequestHeader set X-Forwarded-For "%{REMOTE_ADDR}s"
-    RequestHeader set X-Real-IP "%{REMOTE_ADDR}s"
-    RequestHeader set X-Forwarded-Host "%{HTTP_HOST}s"
-    RequestHeader set X-Forwarded-Port "%{SERVER_PORT}s"
+    RequestHeader append X-Forwarded-For %{REMOTE_ADDR}s
+    RequestHeader set X-Real-IP %{REMOTE_ADDR}s
+    RequestHeader set X-Forwarded-Host %{HTTP_HOST}s
+    RequestHeader set X-Forwarded-Port %{SERVER_PORT}s
 
     <Proxy *>
         Require all granted
     </Proxy>
+
+    # =========================================================
+    # LOGS
+    # =========================================================
 
     ErrorLog ${APACHE_LOG_DIR}/appli.laroche360.ca-ssl-error.log
     CustomLog ${APACHE_LOG_DIR}/appli.laroche360.ca-ssl-access.log combined

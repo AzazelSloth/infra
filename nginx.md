@@ -80,6 +80,10 @@ nano /etc/nginx/conf.d/rps.conf
 Then copy the script bellow:
 
 ```nginx
+# ========================================================
+# UPSTREAMS
+# ========================================================
+
 upstream rps_backend {
     server 127.0.0.1:3000;
     keepalive 32;
@@ -95,19 +99,37 @@ upstream rps_n8n {
     keepalive 16;
 }
 
+# ========================================================
+# SERVER (INTERNE UNIQUEMENT)
+# ========================================================
+
 server {
     listen 127.0.0.1:8786;
     server_name appli.laroche360.ca automation.laroche360.ca;
+
     server_name_in_redirect off;
     port_in_redirect off;
     absolute_redirect off;
-    real_ip_header X-Forwarded-For;
+
+    # ====================================================
+    # REAL IP (important derrière Apache)
+    # ====================================================
+
     set_real_ip_from 127.0.0.1;
+    real_ip_header X-Forwarded-For;
+
+    # ====================================================
+    # SECURITY HEADERS (backend level fallback)
+    # ====================================================
 
     add_header X-Content-Type-Options "nosniff" always;
     add_header X-Frame-Options "SAMEORIGIN" always;
     add_header X-XSS-Protection "1; mode=block" always;
     add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+
+    # ====================================================
+    # LET'S ENCRYPT CHALLENGE (backup safety)
+    # ====================================================
 
     location /.well-known/acme-challenge/ {
         root /var/www/html;
@@ -115,120 +137,133 @@ server {
         allow all;
     }
 
-    # ========================================
-    # n8n UI + API via /n8n/
-    # ========================================
+    # ====================================================
+    # N8N (FULL SUPPORT WEBHOOK + WEBSOCKET)
+    # ====================================================
 
-    # Normalise /n8n -> /n8n/
     location = /n8n {
         return 301 /n8n/;
     }
 
-    # n8n (editor, rest api, webhook, websocket)
-    # Important: ce bloc doit être AVANT location /
     location ^~ /n8n/ {
-        proxy_pass http://rps_n8n/;
+        proxy_pass http://rps_n8n;
+
         proxy_http_version 1.1;
 
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
+
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $http_x_forwarded_proto;
+
+        # IMPORTANT FIX (corrige ton problème actuel)
+        proxy_set_header X-Forwarded-Proto $scheme;
 
         proxy_buffering off;
         proxy_request_buffering off;
 
-        proxy_connect_timeout 60s;
-        proxy_send_timeout 3600s;
-        proxy_read_timeout 3600s;
+        proxy_read_timeout 3600;
+        proxy_send_timeout 3600;
     }
 
-    # ========================================
-    # Swagger UI - Documentation API
-    # ========================================
+    # ====================================================
+    # SWAGGER / DOC API
+    # ====================================================
+
     location ^~ /api-docs {
         proxy_pass http://rps_backend/api-docs;
-        proxy_http_version 1.1;
+
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $http_x_forwarded_proto;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
         proxy_buffering off;
-        proxy_request_buffering off;
-        proxy_read_timeout 60s;
-        proxy_connect_timeout 60s;
     }
 
-    # OpenAPI JSON spec
     location /api-docs-json {
         proxy_pass http://rps_backend/api-docs-json;
-        proxy_http_version 1.1;
+
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $http_x_forwarded_proto;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
         proxy_buffering off;
-        proxy_request_buffering off;
     }
 
-    # Next.js tRPC endpoint must stay on frontend server
+    # ====================================================
+    # TRPC (NEXTJS WEBSOCKET SAFE)
+    # ====================================================
+
     location /api/trpc/ {
         proxy_pass http://rps_frontend;
+
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
+
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $http_x_forwarded_proto;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
         proxy_buffering off;
-        proxy_request_buffering off;
         proxy_read_timeout 86400;
     }
 
-    # ========================================
-    # Special case: let the frontend handle the temporary-access helper
-    # ========================================
-    # This must come BEFORE the generic /api/ backend proxy
+    # ====================================================
+    # SPECIAL ROUTE (AUTH TEMP ACCESS)
+    # ====================================================
+
     location = /api/auth/temporary-access {
         proxy_pass http://rps_frontend;
-        proxy_http_version 1.1;
+
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $http_x_forwarded_proto;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
         proxy_buffering off;
-        proxy_request_buffering off;
-        proxy_read_timeout 60s;
-        proxy_connect_timeout 10s;
     }
 
-    # API Backend (NestJS)
+    # ====================================================
+    # BACKEND API (NESTJS)
+    # ====================================================
+
     location ^~ /api/ {
         proxy_pass http://rps_backend;
+
         proxy_http_version 1.1;
         proxy_set_header Connection "";
+
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $http_x_forwarded_proto;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
         proxy_buffering off;
-        proxy_request_buffering off;
-        proxy_connect_timeout 60s;
-        proxy_send_timeout 60s;
         proxy_read_timeout 60s;
+        proxy_send_timeout 60s;
     }
+
+    # ====================================================
+    # HEALTH CHECK
+    # ====================================================
 
     location /health {
         proxy_pass http://rps_backend/api/health;
         access_log off;
     }
 
+    # ====================================================
+    # NEXTJS STATIC OPTIMIZATION
+    # ====================================================
+
     location /_next/static/ {
         proxy_pass http://rps_frontend;
-        proxy_cache_valid 30d;
+
         add_header Cache-Control "public, immutable";
         expires 30d;
         access_log off;
@@ -236,27 +271,36 @@ server {
 
     location ~* \.(jpg|jpeg|png|gif|ico|css|js|svg|woff|woff2|ttf|eot)$ {
         proxy_pass http://rps_frontend;
-        proxy_cache_valid 7d;
+
         add_header Cache-Control "public, max-age=604800";
         expires 7d;
+        access_log off;
     }
 
-    # API Frontend (Next.js)
+    # ====================================================
+    # FRONTEND DEFAULT
+    # ====================================================
+
     location / {
         proxy_pass http://rps_frontend;
+
         proxy_http_version 1.1;
+
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
+
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $http_x_forwarded_proto;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
         proxy_buffering off;
-        proxy_request_buffering off;
         proxy_read_timeout 86400;
-        proxy_connect_timeout 60s;
-        proxy_send_timeout 60s;
     }
+
+    # ====================================================
+    # LOGS
+    # ====================================================
 
     access_log /var/log/nginx/rps_access.log;
     error_log /var/log/nginx/rps_error.log warn;
