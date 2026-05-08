@@ -25,7 +25,7 @@ Sequence recommandee :
 10. `certbot.md`
 11. `ci_cd.md`
 
-`ufw.md` n'est pas inclus ici car vous avez demande de l'exclure.
+`ufw.md` n'est pas inclus ici.
 
 ## Etape 1 - Verifier l'utilisateur de travail
 
