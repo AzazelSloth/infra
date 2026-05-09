@@ -13,6 +13,14 @@ Dans cette architecture, `httpd` reste l'entree publique sur `80/443` et reverse
 - Pas de `sites-available` / `a2ensite`
 - Fichier de vhost generalement dans `/etc/httpd/conf.d/`
 
+Dans votre environnement actuel, la variante observee est differente :
+
+- binaire de controle : `httpd` et `apachectl`
+- vhost charge depuis `/etc/apache2/conf.d/rps.conf`
+- logs Apache dans `/var/log/apache2/`
+
+Les exemples ci-dessous utilisent donc cette variante, qui correspond a ce que vous avez sur le VPS.
+
 ## Modules a verifier
 
 Avec `httpd`, les modules sont en general deja charges via `conf.modules.d`. Verifiez simplement leur presence :
@@ -25,11 +33,60 @@ Si un module manque, il faut l'activer dans la config du systeme ou installer le
 
 ## VirtualHost recommande
 
-Sur un systeme `httpd` classique, creez :
+Dans votre environnement actuel, creez :
 
 ```bash
-sudo nano /etc/httpd/conf.d/rps.conf
+sudo nano /etc/apache2/conf.d/rps.conf
 ```
+
+## Configuration HTTP seulement
+
+Utilisez cette version tant que les certificats SSL/TLS n'ont pas encore ete emis. Elle permet :
+
+- de valider Apache sans erreur de certificat manquant
+- de laisser le port `80` disponible pour Certbot
+- de tester le reverse proxy avant d'activer HTTPS
+
+```apache
+<VirtualHost *:80>
+    ServerName appli.laroche360.ca
+    ServerAlias automation.laroche360.ca
+
+    ProxyPreserveHost On
+    ProxyRequests Off
+    ProxyTimeout 3600
+    Timeout 3600
+
+    RewriteEngine On
+    RewriteCond %{HTTP:Upgrade} =websocket [NC]
+    RewriteRule /(.*) ws://127.0.0.1:8786/$1 [P,L]
+
+    ProxyPass / http://127.0.0.1:8786/
+    ProxyPassReverse / http://127.0.0.1:8786/
+
+    RequestHeader set X-Forwarded-Proto "http"
+    RequestHeader append X-Forwarded-For %{REMOTE_ADDR}s
+    RequestHeader set X-Real-IP %{REMOTE_ADDR}s
+    RequestHeader set X-Forwarded-Host %{HTTP_HOST}s
+    RequestHeader set X-Forwarded-Port %{SERVER_PORT}s
+
+    ErrorLog /var/log/apache2/rps-http-error.log
+    CustomLog /var/log/apache2/rps-http-access.log combined
+</VirtualHost>
+```
+
+Verification :
+
+```bash
+sudo apachectl configtest
+sudo systemctl restart httpd
+```
+
+## Configuration HTTP + HTTPS
+
+Une fois les certificats presents dans `/etc/letsencrypt/live/appli.laroche360.ca/`, remplacez le contenu precedent par cette version.
+
+Le bloc `:80` garde l'acces au challenge ACME puis redirige le reste vers HTTPS.
 
 ```apache
 <VirtualHost *:80>
@@ -40,8 +97,8 @@ sudo nano /etc/httpd/conf.d/rps.conf
     RewriteCond %{REQUEST_URI} !^/\.well-known/acme-challenge/
     RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
 
-    ErrorLog /var/log/httpd/rps-http-error.log
-    CustomLog /var/log/httpd/rps-http-access.log combined
+    ErrorLog /var/log/apache2/rps-http-error.log
+    CustomLog /var/log/apache2/rps-http-access.log combined
 </VirtualHost>
 
 <IfModule mod_ssl.c>
@@ -81,16 +138,23 @@ sudo nano /etc/httpd/conf.d/rps.conf
     RequestHeader set X-Forwarded-Host %{HTTP_HOST}s
     RequestHeader set X-Forwarded-Port %{SERVER_PORT}s
 
-    ErrorLog /var/log/httpd/rps-https-error.log
-    CustomLog /var/log/httpd/rps-https-access.log combined
+    ErrorLog /var/log/apache2/rps-https-error.log
+    CustomLog /var/log/apache2/rps-https-access.log combined
 </VirtualHost>
 </IfModule>
+```
+
+Verification :
+
+```bash
+sudo httpd -t
+sudo systemctl restart httpd
 ```
 
 ## Activation
 
 ```bash
-sudo apachectl configtest
+sudo httpd -t
 sudo systemctl restart httpd
 sudo systemctl status httpd
 ```

@@ -290,13 +290,13 @@ Objectif : exposer les domaines publics en `80/443` et relayer vers Nginx.
 
 Selon votre environnement, utilisez :
 
-- soit `/etc/httpd/conf.d/rps.conf`
+- soit `/etc/apache2/conf.d/rps.conf` dans votre environnement actuel
 - soit les `userdata includes` cPanel si `httpd` est gere par WHM
 
 Verification :
 
 ```bash
-sudo apachectl configtest
+sudo httpd -t
 sudo httpd -M | grep -E 'ssl|proxy|proxy_http|proxy_wstunnel|rewrite|headers|remoteip|http2'
 sudo systemctl restart httpd
 ```
@@ -314,9 +314,11 @@ sudo snap install core
 sudo snap refresh core
 sudo snap install --classic certbot
 sudo ln -sf /snap/bin/certbot /usr/local/bin/certbot
-sudo certbot certonly --apache -d appli.laroche360.ca -d automation.laroche360.ca
+sudo systemctl stop apache2 || sudo systemctl stop httpd
+sudo certbot certonly --standalone -d appli.laroche360.ca -d automation.laroche360.ca
+sudo systemctl start httpd
 sudo certbot certificates
-sudo apachectl configtest
+sudo httpd -t
 sudo systemctl reload httpd
 ```
 
@@ -330,7 +332,7 @@ Commandes :
 pm2 status
 docker compose -f /srv/rps/docker-compose.yml ps
 sudo nginx -t
-sudo apachectl configtest
+sudo httpd -t
 curl -I https://appli.laroche360.ca
 curl -I https://automation.laroche360.ca/n8n/
 ```
