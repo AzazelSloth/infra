@@ -17,6 +17,58 @@ Creer le fichier :
 sudo nano /etc/nginx/conf.d/rps.conf
 ```
 
+Voici la configuration à mettre dans l'hôte (directement dans le VPS):
+
+```nginx
+map $http_upgrade $connection_upgrade {
+    default upgrade;
+    '' close;
+}
+
+server {
+    listen 127.0.0.1:8786;
+    server_name appli.laroche360.ca automation.laroche360.ca;
+
+    server_name_in_redirect off;
+    port_in_redirect off;
+    absolute_redirect off;
+    client_max_body_size 20m;
+
+    set_real_ip_from 127.0.0.1;
+    real_ip_header X-Forwarded-For;
+
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+
+    location /.well-known/acme-challenge/ {
+        root /var/www/html;
+        default_type text/plain;
+        allow all;
+    }
+
+    location / {
+        proxy_pass http://127.0.0.1:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $connection_upgrade;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_buffering off;
+        proxy_request_buffering off;
+        proxy_read_timeout 3600;
+        proxy_send_timeout 3600;
+    }
+
+    access_log /var/log/nginx/rps_access.log;
+    error_log /var/log/nginx/rps_error.log warn;
+}
+```
+
+Et voici celle à inclure dans le docker compose :
+
 ```nginx
 map $http_upgrade $connection_upgrade {
     default upgrade;
@@ -133,7 +185,7 @@ server {
     }
 
     location /health {
-        proxy_pass http://rps_backend/api/health;
+        proxy_pass http://rps_backend/health;
         access_log off;
     }
 
