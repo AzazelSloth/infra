@@ -48,7 +48,7 @@ server {
     }
 
     location / {
-        proxy_pass http://127.0.0.1:3000;
+        proxy_pass http://104.254.182.46:8787;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection $connection_upgrade;
@@ -91,7 +91,7 @@ upstream rps_n8n {
 }
 
 server {
-    listen 127.0.0.1:8786;
+    listen 127.0.0.1:8787;
     server_name appli.laroche360.ca automation.laroche360.ca;
 
     server_name_in_redirect off;
